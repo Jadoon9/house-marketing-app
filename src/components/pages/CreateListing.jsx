@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { auth } from '../../firebase';
 import Spinner from '../Spinner';
 const CreateListing = () => {
+  const [geoLocationEnabled, setGeoLocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     type: 'rent',
@@ -64,7 +65,33 @@ const CreateListing = () => {
     e.preventDefault();
   };
 
-  const onMutate = (e) => {};
+  const onMutate = (e) => {
+    // Check if value is Boolean
+    let boolean = null;
+
+    // Check for true and false
+    if (e.target.value === 'true') {
+      boolean = true;
+    }
+    if (e.target.value === 'false') {
+      boolean = false;
+    }
+
+    // Check for Files
+    if (e.target.files) {
+      setFormData((prevState) => ({
+        ...prevState,
+        images: e.target.files,
+      }));
+    }
+    // Check For Texts
+    if (!e.target.files) {
+      setFormData((prevState) => ({
+        ...prevState,
+        [e.target.id]: boolean ?? e.target.value,
+      }));
+    }
+  };
 
   return (
     <div className='profile'>
@@ -89,7 +116,7 @@ const CreateListing = () => {
               type='button'
               className={type === 'rent' ? 'formButtonActive' : 'formButton'}
               id='type'
-              value='sale'
+              value='rent'
               onClick={onMutate}
             >
               Rent
@@ -121,6 +148,8 @@ const CreateListing = () => {
                 min='1'
                 required
               />
+            </div>
+            <div>
               <label className='formLabel'>Bathrooms</label>
               <input
                 type='number'
@@ -135,6 +164,7 @@ const CreateListing = () => {
             </div>
           </div>
 
+          <label className='formLabel'>Parking Spot</label>
           <div className='formButtons'>
             <button
               className={parking ? 'formButtonActive' : 'formButton'}
@@ -158,10 +188,11 @@ const CreateListing = () => {
               min='1'
               max='50'
             >
-              Yes
+              No
             </button>
           </div>
 
+          <label className='formLabel'>Furnished</label>
           <div className='formButtons'>
             <button
               className={furnished ? 'formButtonActive' : 'formButton'}
@@ -187,9 +218,118 @@ const CreateListing = () => {
               min='1'
               max='50'
             >
-              Yes
+              No
             </button>
           </div>
+          <label className='formLabel'>Address</label>
+          <textarea
+            id='address'
+            type='text'
+            value={address}
+            className='formInputAddress'
+            onChange={onMutate}
+            required
+          ></textarea>
+
+          {!geoLocationEnabled && (
+            <div className='formLatLng flex'>
+              <div>
+                <label className='formLabel'>Latitude</label>
+                <input
+                  type='number'
+                  className='formInputSmall'
+                  id='latitude'
+                  value={latitude}
+                  onChange={onMutate}
+                  required
+                />
+              </div>
+              <div>
+                <label className='formLabel'>Longitude</label>
+                <input
+                  type='number'
+                  className='formInputSmall'
+                  id='longitude'
+                  value={longitude}
+                  onChange={onMutate}
+                  required
+                />
+              </div>
+            </div>
+          )}
+
+          <label className='formLabel'>Offer</label>
+          <div className='formButtons'>
+            <button
+              className={offer ? 'formButtonActive' : 'formButton'}
+              type='button'
+              id='offer'
+              value={true}
+              onClick={onMutate}
+            >
+              Yes
+            </button>
+            <button
+              className={
+                !offer && offer !== null ? 'formButtonActive' : 'formButton'
+              }
+              type='button'
+              id='offer'
+              value={false}
+              onClick={onMutate}
+            >
+              No
+            </button>
+          </div>
+
+          <label className='formLabel'>Regular Price</label>
+          <div className='formPriceDiv'>
+            <input
+              className='formInputSmall'
+              type='number'
+              id='regularPrice'
+              value={regularPrice}
+              onChange={onMutate}
+              min='50'
+              max='750000000'
+              required
+            />
+            {type === 'rent' && <p className='formPriceText'>$ / Month</p>}
+          </div>
+
+          {offer && (
+            <>
+              <label className='formLabel'>Discounted Price</label>
+              <input
+                className='formInputSmall'
+                type='number'
+                id='discountedPrice'
+                value={discountedPrice}
+                onChange={onMutate}
+                min='50'
+                max='750000000'
+                required={offer}
+              />
+            </>
+          )}
+
+          <label className='formLabel'>Images</label>
+          <p className='imagesInfo'>
+            The first image will be the cover (max 6).
+          </p>
+          <input
+            className='formInputFile'
+            type='file'
+            id='images'
+            onChange={onMutate}
+            max='6'
+            accept='.jpg,.png,.jpeg'
+            multiple
+            required
+          />
+          <button type='submit' className='primaryButton createListingButton'>
+            Create Listing
+          </button>
         </form>
       </main>
     </div>
