@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import Navbar from './components/Navbar';
+import Category from './components/pages/Category';
+import CreateListing from './components/pages/CreateListing';
 
-function App() {
+import Explore from './components/pages/Explore';
+import ForgotPassword from './components/pages/ForgotPassword';
+import Offers from './components/pages/Offers';
+import Profile from './components/pages/Profile';
+import SignIn from './components/pages/SignIn';
+import Signup from './components/pages/Signup';
+import PrivateRoute from './components/PrivateRoute';
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ToastContainer />
+      <Routes>
+        <Route path='/' element={<Explore />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/offers' element={<Offers />} />
+        <Route path='/category/:categoryName' element={<Category />} />
+        <Route path='/profile' element={<PrivateRoute />}>
+          <Route path='/profile' element={<Profile />} />
+        </Route>
+        <Route path='/sign-in' element={<SignIn />} />
+        <Route path='/sign-up' element={<Signup />} />
+        <Route path='/create-listing' element={<CreateListing />} />
+      </Routes>
+      <Navbar />
+    </>
   );
-}
+};
 
 export default App;
