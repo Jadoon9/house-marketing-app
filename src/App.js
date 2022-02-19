@@ -2,10 +2,12 @@ import { Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import Navbar from './components/Navbar';
 import Category from './components/pages/Category';
+import Contact from './components/pages/Contact';
 import CreateListing from './components/pages/CreateListing';
 
 import Explore from './components/pages/Explore';
 import ForgotPassword from './components/pages/ForgotPassword';
+import Listing from './components/pages/Listing';
 import Offers from './components/pages/Offers';
 import Profile from './components/pages/Profile';
 import SignIn from './components/pages/SignIn';
@@ -27,6 +29,11 @@ const App = () => {
         <Route path='/sign-in' element={<SignIn />} />
         <Route path='/sign-up' element={<Signup />} />
         <Route path='/create-listing' element={<CreateListing />} />
+        <Route
+          path='/category/:categoryName/:listingId'
+          element={<Listing />}
+        />
+        <Route path='/contact/:landlordId' element={<Contact />} />
       </Routes>
       <Navbar />
     </>

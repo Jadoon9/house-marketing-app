@@ -9,7 +9,9 @@ import db from '../../firebase';
 import Spinner from '../Spinner';
 import { toast } from 'react-toastify';
 import { addDoc, collection, serverTimestamp } from '@firebase/firestore';
+
 const CreateListing = () => {
+  const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     type: 'rent',
@@ -39,6 +41,8 @@ const CreateListing = () => {
     regularPrice,
     discountedPrice,
     images,
+    latitude,
+    longitude,
   } = formData;
 
   const navigate = useNavigate();
@@ -66,12 +70,41 @@ const CreateListing = () => {
 
   const formSubmitHandler = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
     // * Check for discounted price
     if (discountedPrice >= regularPrice) {
       setLoading(false);
       toast.error('Discounted Price need to be less than regular price');
       return;
+    }
+
+    // * Getting Location
+    let geolocation = {};
+    let location;
+
+    if (geolocationEnabled) {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyCZj7LrTlAB2J_KqNV6OUD9uIa4J274IiA`
+      );
+
+      const data = await response.json();
+
+      geolocation.lat = data.results[0]?.geometry.location.lat ?? 0;
+      geolocation.lng = data.results[0]?.geometry.location.lng ?? 0;
+
+      location =
+        data.status === 'ZERO_RESULTS'
+          ? undefined
+          : data.results[0]?.formatted_address;
+
+      if (location === undefined || location.includes('undefined')) {
+        setLoading(false);
+        toast.error('Please enter a correct address');
+        return;
+      }
+    } else {
+      geolocation.lat = latitude;
+      geolocation.lng = longitude;
     }
 
     //* Check for max 6 images
@@ -131,11 +164,15 @@ const CreateListing = () => {
     const formDataCopy = {
       ...formData,
       imgUrls,
+      geolocation,
       timestamp: serverTimestamp(),
     };
 
+    console.log(formDataCopy);
     delete formDataCopy.images;
+    delete formDataCopy.address;
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
+
     const docRef = await addDoc(collection(db, 'listings'), formDataCopy);
     setLoading(false);
     toast.success('Listing Saved Successfully');

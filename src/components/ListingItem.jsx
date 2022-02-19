@@ -3,7 +3,6 @@ import { ReactComponent as DeleteIcon } from '../assets/svg/deleteIcon.svg';
 import bedIcon from '../assets/svg/bedIcon.svg';
 
 const ListingItem = ({ listing, id, onDelete }) => {
-  console.log(listing);
   return (
     <li className='categoryListing'>
       <Link
@@ -16,7 +15,7 @@ const ListingItem = ({ listing, id, onDelete }) => {
           className='categoryListingImg'
         />
         <div className='categoryListingDetails'>
-          <p className='categoryListingLocation'>{listing.address}</p>
+          <p className='categoryListingLocation'>{listing.location}</p>
           <p className='categoryListingName'>{listing.name}</p>
 
           <p className='categoryListingPrice'>
